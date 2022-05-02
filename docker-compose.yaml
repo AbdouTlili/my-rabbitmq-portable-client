@@ -16,6 +16,22 @@ services:
     networks:
       - dev-net
 
+  sender: 
+    container_name: sender
+    ports:
+      - 3000:3000
+    build:
+      context: ./sender
+      dockerfile: Dockerfile-sender
+    environment:
+      AMQP_SERVER_URL: amqp://guest:guest@message-broker:5672/
+    restart: always
+    networks:
+      - dev-net
+    depends_on:
+      - message-broker
+
+
 
 networks:
   #creating a docker net
