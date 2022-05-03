@@ -55,7 +55,7 @@ func main() {
 	)
 
 	//add a route to fiber
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.Get("/send", func(c *fiber.Ctx) error {
 		// create a message to publish
 		message := amqp.Publishing{
 			ContentType: "text/plain",

@@ -1,0 +1,17 @@
+FROM golang:1.16-alpine AS build 
+
+WORKDIR /build
+
+COPY go.mod go.sum ./
+
+COPY ./consumer/main.go .
+
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
+RUN go build -ldflags="-s -w" -o consumer .
+
+FROM scratch
+
+COPY --from=build ["/build/consumer","/"]
+
+ENTRYPOINT [ "/consumer" ]

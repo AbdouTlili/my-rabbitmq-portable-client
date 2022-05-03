@@ -10,8 +10,8 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ${HOME}/dev-rabbitmq/data/:/var/lib/rabbitmq
-      - ${HOME}/dev-rabbitmq/log/:/var/log/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
     restart: always
     networks:
       - dev-net
@@ -21,8 +21,8 @@ services:
     ports:
       - 3000:3000
     build:
-      context: ./sender
-      dockerfile: Dockerfile-sender
+      context: .
+      dockerfile: ./build/sender/Dockerfile-sender
     environment:
       AMQP_SERVER_URL: amqp://guest:guest@message-broker:5672/
     restart: always
@@ -31,9 +31,26 @@ services:
     depends_on:
       - message-broker
 
+  consumer: 
+    container_name: consumer
+    build:
+      context: .
+      dockerfile: ./build/consumer/Dockerfile-consumer
+    environment:
+      AMQP_SERVER_URL: amqp://guest:guest@message-broker:5672/
+    restart: always
+    networks:
+      - dev-net
+    depends_on:
+      - sender 
+      - message-broker
 
 
 networks:
   #creating a docker net
   dev-net:
     driver: bridge
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_log:
